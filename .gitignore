@@ -1,0 +1,33 @@
+# Node / package
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+
+# Media and build artifacts
+videos/
+*.mp4
+*.mkv
+*.avi
+
+# Editor swap files
+*.swp
