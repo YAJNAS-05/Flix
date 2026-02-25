@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="x-icon" href="./images/movie logo.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Panther - Flix Player</title>
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- BOX ICONS -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <!-- APP CSS -->
+    <link rel="stylesheet" href="grid.css">
+    <link rel="stylesheet" href="app.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--body-bg);
+            color: var(--text-color);
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 1920px;
+            background: #000;
+        }
+
+        .main-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.7) 0%,
+                transparent 20%,
+                transparent 80%,
+                rgba(0,0,0,0.8) 100%
+            );
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-wrapper:hover .video-overlay,
+        .controls-visible .video-overlay {
+            opacity: 1;
+        }
+
+        .video-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .video-wrapper:hover .video-header,
+        .controls-visible .video-header {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .video-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--main-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .video-info {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            font-size: 1rem;
+            color: #c0c0c0;
+        }
+
+        .video-info span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 15;
+            font-size: 1.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--main-color);
+            border-color: var(--main-color);
+            transform: scale(1.1);
+        }
+
+        .play-pause-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            border: 3px solid var(--main-color);
+            color: white;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 5;
+        }
+
+        .play-pause-center.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .play-pause-center:hover {
+            background: var(--main-color);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .video-wrapper:hover .video-controls,
+        .controls-visible .video-controls {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .progress-area {
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--main-color);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .progress-bar:hover {
+            height: 8px;
+            margin-top: -1px;
+        }
+
+        .progress-bar:hover::before {
+            background: linear-gradient(45deg, var(--main-color), #0099ff);
+        }
+
+        .controls-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .controls-left,
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--main-color);
+            transform: scale(1.1);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--main-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .time-display {
+            font-size: 0.9rem;
+            color: #c0c0c0;
+            font-weight: 600;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid var(--main-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+            z-index: 20;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .video-ended-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 25;
+            backdrop-filter: blur(10px);
+        }
+
+        .ended-content {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .ended-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--main-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ended-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .ended-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--main-color), #0056b3);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ended-btn:hover {
+            background: linear-gradient(45deg, #0056b3, var(--main-color));
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(31,131,237,0.4);
+        }
+
+        /* Mobile Responsive */
+        @media only screen and (max-width: 768px) {
+            .video-header {
+                padding: 1rem;
+            }
+
+            .video-title {
+                font-size: 1.8rem;
+            }
+
+            .video-controls {
+                padding: 1rem;
+            }
+
+            .controls-wrapper {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .volume-container {
+                order: -1;
+            }
+
+            .back-btn {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.8rem;
+                font-size: 1.2rem;
+            }
+
+            .play-pause-center {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .video-wrapper {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="video-player-container">
+        <div class="video-wrapper" id="videoWrapper">
+            <!-- Video Element -->
+            <video class="main-video" id="mainVideo" preload="metadata">
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner"></div>
+
+            <!-- Video Overlay -->
+            <div class="video-overlay"></div>
+
+            <!-- Back Button -->
+            <button class="back-btn" id="backBtn">
+                <i class='bx bx-x'></i>
+            </button>
+
+            <!-- Video Header -->
+            <div class="video-header">
+                <h1 class="video-title">Black Panther</h1>
+                <div class="video-info">
+                    <span><i class='bx bxs-star'></i> 9.5</span>
+                    <span><i class='bx bxs-time'></i> 134 mins</span>
+                    <span>4K Ultra HD</span>
+                    <span>Action, Adventure, Sci-Fi</span>
+                    <span>2018</span>
+                </div>
+            </div>
+
+            <!-- Center Play/Pause Button -->
+            <button class="play-pause-center" id="centerPlayBtn">
+                <i class='bx bx-play'></i>
+            </button>
+
+            <!-- Video Controls -->
+            <div class="video-controls">
+                <div class="progress-area" id="progressArea">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="controls-wrapper">
+                    <div class="controls-left">
+                        <button class="control-btn" id="playPauseBtn">
+                            <i class='bx bx-play'></i>
+                        </button>
+                        <div class="volume-container">
+                            <button class="control-btn" id="volumeBtn">
+                                <i class='bx bx-volume-full'></i>
+                            </button>
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+                        </div>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+                        </div>
+                    </div>
+                    <div class="controls-right">
+                        <button class="control-btn" id="speedBtn">
+                            <i class='bx bx-tachometer'></i>
+                        </button>
+                        <button class="control-btn" id="fullscreenBtn">
+                            <i class='bx bx-fullscreen'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Ended Overlay -->
+            <div class="video-ended-overlay" id="videoEndedOverlay">
+                <div class="ended-content">
+                    <h2 class="ended-title">Thanks for Watching!</h2>
+                    <p style="color: #c0c0c0; font-size: 1.2rem; margin-bottom: 2rem;">
+                        Hope you enjoyed Black Panther
+                    </p>
+                    <div class="ended-actions">
+                        <button class="ended-btn" id="replayBtn">
+                            <i class='bx bx-refresh'></i>
+                            Watch Again
+                        </button>
+                        <button class="ended-btn" id="backHomeBtn">
+                            <i class='bx bx-home'></i>
+                            Back to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            const video = $('#mainVideo')[0];
+            const videoWrapper = $('#videoWrapper');
+            const playPauseBtn = $('#playPauseBtn');
+            const centerPlayBtn = $('#centerPlayBtn');
+            const progressBar = $('#progressBar');
+            const progressArea = $('#progressArea');
+            const volumeBtn = $('#volumeBtn');
+            const volumeSlider = $('#volumeSlider');
+            const currentTimeEl = $('#currentTime');
+            const durationEl = $('#duration');
+            const fullscreenBtn = $('#fullscreenBtn');
+            const speedBtn = $('#speedBtn');
+            const backBtn = $('#backBtn');
+            const loadingSpinner = $('#loadingSpinner');
+            const videoEndedOverlay = $('#videoEndedOverlay');
+            const replayBtn = $('#replayBtn');
+            const backHomeBtn = $('#backHomeBtn');
+
+            let controlsTimeout;
+            let currentSpeed = 1;
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+            let speedIndex = 2;
+
+            // Set video source (you'll update this path later)
+            video.src = './videos/black-panther.mp4'; // Update this path
+
+            // Show loading spinner initially
+            loadingSpinner.show();
+
+            // Video events
+            video.addEventListener('loadstart', () => {
+                loadingSpinner.show();
+            });
+
+            video.addEventListener('loadeddata', () => {
+                loadingSpinner.hide();
+                updateDuration();
+            });
+
+            video.addEventListener('waiting', () => {
+                loadingSpinner.show();
+            });
+
+            video.addEventListener('playing', () => {
+                loadingSpinner.hide();
+            });
+
+            video.addEventListener('timeupdate', updateProgress);
+            video.addEventListener('ended', showEndedOverlay);
+
+            // Play/Pause functionality
+            function togglePlayPause() {
+                if (video.paused) {
+                    video.play();
+                    updatePlayButton(false);
+                    showCenterButton();
+                } else {
+                    video.pause();
+                    updatePlayButton(true);
+                    showCenterButton();
+                }
+            }
+
+            function updatePlayButton(isPaused) {
+                const icon = isPaused ? 'bx-play' : 'bx-pause';
+                playPauseBtn.find('i').removeClass().addClass(`bx ${icon}`);
+                centerPlayBtn.find('i').removeClass().addClass(`bx ${icon}`);
+            }
+
+            function showCenterButton() {
+                centerPlayBtn.addClass('show');
+                setTimeout(() => {
+                    centerPlayBtn.removeClass('show');
+                }, 1000);
+            }
+
+            // Progress bar functionality
+            function updateProgress() {
+                const progress = (video.currentTime / video.duration) * 100;
+                progressBar[0].style.setProperty('--progress', `${progress}%`);
+                progressBar.css('--progress', `${progress}%`);
+                updateCurrentTime();
+            }
+
+            function updateCurrentTime() {
+                currentTimeEl.text(formatTime(video.currentTime));
+            }
+
+            function updateDuration() {
+                durationEl.text(formatTime(video.duration));
+            }
+
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            // Volume functionality
+            function updateVolume() {
+                const volume = volumeSlider.val() / 100;
+                video.volume = volume;
+                
+                let volumeIcon = 'bx-volume-full';
+                if (volume === 0) {
+                    volumeIcon = 'bx-volume-mute';
+                } else if (volume < 0.5) {
+                    volumeIcon = 'bx-volume-low';
+                }
+                
+                volumeBtn.find('i').removeClass().addClass(`bx ${volumeIcon}`);
+            }
+
+            function toggleMute() {
+                if (video.volume === 0) {
+                    video.volume = 1;
+                    volumeSlider.val(100);
+                } else {
+                    video.volume = 0;
+                    volumeSlider.val(0);
+                }
+                updateVolume();
+            }
+
+            // Speed functionality
+            function changeSpeed() {
+                speedIndex = (speedIndex + 1) % speeds.length;
+                currentSpeed = speeds[speedIndex];
+                video.playbackRate = currentSpeed;
+                
+                // Show speed indicator
+                speedBtn.html(`<span style="font-size: 0.8rem;">${currentSpeed}x</span>`);
+                setTimeout(() => {
+                    speedBtn.html(`<i class='bx bx-tachometer'></i>`);
+                }, 2000);
+            }
+
+            // Fullscreen functionality
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    videoWrapper[0].requestFullscreen();
+                    fullscreenBtn.find('i').removeClass().addClass('bx bx-exit-fullscreen');
+                } else {
+                    document.exitFullscreen();
+                    fullscreenBtn.find('i').removeClass().addClass('bx bx-fullscreen');
+                }
+            }
+
+            // Controls visibility
+            function showControls() {
+                videoWrapper.addClass('controls-visible');
+                clearTimeout(controlsTimeout);
+                controlsTimeout = setTimeout(hideControls, 3000);
+            }
+
+            function hideControls() {
+                if (!video.paused) {
+                    videoWrapper.removeClass('controls-visible');
+                }
+            }
+
+            function showEndedOverlay() {
+                videoEndedOverlay.show().css('display', 'flex');
+            }
+
+            function hideEndedOverlay() {
+                videoEndedOverlay.hide();
+            }
+
+            // Event listeners
+            playPauseBtn.on('click', togglePlayPause);
+            centerPlayBtn.on('click', togglePlayPause);
+            video.addEventListener('click', togglePlayPause);
+
+            volumeBtn.on('click', toggleMute);
+            volumeSlider.on('input', updateVolume);
+
+            speedBtn.on('click', changeSpeed);
+            fullscreenBtn.on('click', toggleFullscreen);
+
+            backBtn.on('click', () => {
+                window.close();
+            });
+
+            replayBtn.on('click', () => {
+                video.currentTime = 0;
+                video.play();
+                hideEndedOverlay();
+                updatePlayButton(false);
+            });
+
+            backHomeBtn.on('click', () => {
+                window.close();
+            });
+
+            // Progress bar click
+            progressArea.on('click', (e) => {
+                const rect = progressArea[0].getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const clickTime = (clickX / width) * video.duration;
+                video.currentTime = clickTime;
+            });
+
+            // Mouse movement and controls
+            videoWrapper.on('mousemove', showControls);
+            videoWrapper.on('mouseleave', hideControls);
+
+            // Keyboard controls
+            $(document).on('keydown', (e) => {
+                switch(e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        togglePlayPause();
+                        break;
+                    case 'f':
+                    case 'F':
+                        toggleFullscreen();
+                        break;
+                    case 'm':
+                    case 'M':
+                        toggleMute();
+                        break;
+                    case 'ArrowRight':
+                        video.currentTime += 10;
+                        break;
+                    case 'ArrowLeft':
+                        video.currentTime -= 10;
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        volumeSlider.val(Math.min(100, parseInt(volumeSlider.val()) + 10));
+                        updateVolume();
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        volumeSlider.val(Math.max(0, parseInt(volumeSlider.val()) - 10));
+                        updateVolume();
+                        break;
+                }
+                showControls();
+            });
+
+            // Initialize
+            updateVolume();
+            showControls();
+
+            // CSS for progress bar
+            $('<style>').prop('type', 'text/css').html(`
+                .progress-bar::before {
+                    width: var(--progress, 0%) !important;
+                }
+            `).appendTo('head');
+        });
+    </script>
+</body>
+
+</html>

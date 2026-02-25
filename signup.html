@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="x-icon" href="./images/movie logo.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Flix</title>
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- BOX ICONS -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <!-- APP CSS -->
+    <link rel="stylesheet" href="grid.css">
+    <link rel="stylesheet" href="app.css">
+    <style>
+        /* Additional styles for signup page */
+        .signup-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(31,131,237,0.1));
+            position: relative;
+        }
+
+        .signup-container {
+            background-color: var(--box-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .signup-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--main-color), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .signup-subtitle {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background-color: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--main-color);
+            background-color: rgba(31,131,237,0.05);
+            box-shadow: 0 0 20px rgba(31,131,237,0.2);
+        }
+
+        .form-input::placeholder {
+            color: #666;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            background-color: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--main-color);
+            background-color: rgba(31,131,237,0.05);
+        }
+
+        .form-select option {
+            background-color: var(--box-bg);
+            color: var(--text-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--main-color);
+        }
+
+        .checkbox-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        .checkbox-label a {
+            color: var(--main-color);
+            text-decoration: underline;
+        }
+
+        .checkbox-label a:hover {
+            color: #ffffff;
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--main-color), #0056b3);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .signup-btn:hover {
+            background: linear-gradient(45deg, #0056b3, var(--main-color));
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(31,131,237,0.4);
+        }
+
+        .signin-link {
+            text-align: center;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .signin-link a {
+            color: var(--main-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signin-link a:hover {
+            text-decoration: underline;
+        }
+
+        .social-signup {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .social-divider {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .social-divider::before,
+        .social-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .social-divider span {
+            padding: 0 1rem;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 1rem;
+            background-color: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .social-btn:hover {
+            border-color: var(--main-color);
+            background-color: rgba(31,131,237,0.1);
+            transform: translateY(-2px);
+        }
+
+        .social-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 850px) {
+            .signup-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+            }
+
+            .signup-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Success message */
+        .success-message {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* Error message */
+        .error-message {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAV -->
+    <div class="nav-wrapper">
+        <div class="container">
+            <div class="nav">
+                <a href="home.html" class="logo">
+                    <i class='bx bx-movie-play bx-tada main-color'></i>Fl<span class="main-color">i</span>x
+                </a>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="#">Genre</a></li>
+                    <li><a href="#">Series</a></li>
+                    <li><a href="#">About</a></li>
+                    <li>
+                        <a href="#" class="btn btn-hover">
+                            <span>Sign in</span>
+                        </a>
+                    </li>
+                </ul>
+                <!-- MOBILE MENU TOGGLE -->
+                <div class="hamburger-menu" id="hamburger-menu">
+                    <div class="hamburger"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END NAV -->
+
+    <!-- SIGNUP SECTION -->
+    <div class="signup-section">
+        <div class="signup-container">
+            <div class="signup-header">
+                <h1 class="signup-title">Join Flix</h1>
+                <p class="signup-subtitle">Create your account and start streaming</p>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <i class='bx bx-check-circle'></i>
+                Account created successfully! Welcome to Flix!
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                <i class='bx bx-error-circle'></i>
+                <span id="errorText">Please fill in all required fields</span>
+            </div>
+
+            <form class="signup-form" id="signupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-input" placeholder="John" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-input" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="john.doe@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="Create a strong password" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-input" placeholder="Confirm your password" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <select class="form-select" required>
+                            <option value="">Select Country</option>
+                            <option value="us">United States</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="ca">Canada</option>
+                            <option value="au">Australia</option>
+                            <option value="de">Germany</option>
+                            <option value="fr">France</option>
+                            <option value="jp">Japan</option>
+                            <option value="in">India</option>
+                            <option value="br">Brazil</option>
+                            <option value="mx">Mexico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <select class="form-select" required>
+                            <option value="">Select Age</option>
+                            <option value="13-17">13-17</option>
+                            <option value="18-24">18-24</option>
+                            <option value="25-34">25-34</option>
+                            <option value="35-44">35-44</option>
+                            <option value="45-54">45-54</option>
+                            <option value="55+">55+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="terms" required>
+                    <label class="checkbox-label" for="terms">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="newsletter">
+                    <label class="checkbox-label" for="newsletter">
+                        Subscribe to our newsletter for updates and exclusive content
+                    </label>
+                </div>
+
+                <button type="submit" class="signup-btn" id="signupBtn">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="social-divider">
+                <span>Or sign up with</span>
+            </div>
+
+            <div class="social-buttons">
+                <a href="#" class="social-btn">
+                    <i class='bx bxl-google'></i>
+                    Google
+                </a>
+                <a href="#" class="social-btn">
+                    <i class='bx bxl-facebook'></i>
+                    Facebook
+                </a>
+            </div>
+
+            <div class="signin-link">
+                Already have an account? <a href="signin.html">Sign in here</a>
+            </div>
+        </div>
+    </div>
+    <!-- END SIGNUP SECTION -->
+
+    <!-- SCRIPT -->
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!-- APP SCRIPT -->
+    <script src="app.js"></script>
+    
+    <script>
+        $(document).ready(() => {
+            // Mobile menu toggle
+            $('#hamburger-menu').click(() => {
+                $('#hamburger-menu').toggleClass('active')
+                $('#nav-menu').toggleClass('active')
+            })
+
+            // Form submission
+            $('#signupForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const form = $(this);
+                const submitBtn = $('#signupBtn');
+                const successMsg = $('#successMessage');
+                const errorMsg = $('#errorMessage');
+                const errorText = $('#errorText');
+                
+                // Reset messages
+                successMsg.hide();
+                errorMsg.hide();
+                
+                // Get form data
+                const firstName = form.find('input[type="text"]').first().val();
+                const lastName = form.find('input[type="text"]').last().val();
+                const email = form.find('input[type="email"]').val();
+                const password = form.find('input[type="password"]').first().val();
+                const confirmPassword = form.find('input[type="password"]').last().val();
+                const country = form.find('select').first().val();
+                const age = form.find('select').last().val();
+                const termsAccepted = $('#terms').is(':checked');
+                
+                // Validation
+                if (!firstName || !lastName || !email || !password || !confirmPassword || !country || !age) {
+                    errorText.text('Please fill in all required fields');
+                    errorMsg.show();
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    errorText.text('Passwords do not match');
+                    errorMsg.show();
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    errorText.text('Password must be at least 8 characters long');
+                    errorMsg.show();
+                    return;
+                }
+                
+                if (!termsAccepted) {
+                    errorText.text('You must accept the Terms of Service');
+                    errorMsg.show();
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.addClass('loading').text('Creating Account...');
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Remove loading state
+                    submitBtn.removeClass('loading').text('Create Account');
+                    
+                    // Show success message
+                    successMsg.show();
+                    
+                    // Reset form
+                    form[0].reset();
+                    
+                    // Redirect after 2 seconds (in real app, redirect to dashboard)
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                        console.log('Would redirect to dashboard or login page');
+                    }, 2000);
+                    
+                }, 2000);
+            });
+
+            // Real-time password matching
+            $('input[type="password"]').on('input', function() {
+                const password = $('input[type="password"]').first().val();
+                const confirmPassword = $('input[type="password"]').last().val();
+                const confirmInput = $('input[type="password"]').last();
+                
+                if (confirmPassword && password !== confirmPassword) {
+                    confirmInput.css('border-color', '#dc3545');
+                } else if (confirmPassword && password === confirmPassword) {
+                    confirmInput.css('border-color', '#28a745');
+                } else {
+                    confirmInput.css('border-color', 'rgba(255,255,255,0.1)');
+                }
+            });
+
+            // Social login buttons
+            $('.social-btn').on('click', function(e) {
+                e.preventDefault();
+                const platform = $(this).text().trim();
+                alert(`${platform} login integration would be implemented here`);
+            });
+        });
+    </script>
+
+</body>
+
+</html>
